@@ -676,7 +676,8 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
       const {
         preloadImages,
         cacheAjaxRequests,
-        preconnectThirdParty
+        preconnectThirdParty,
+        sitemap
       } = options;
       if (
         preloadImages ||
@@ -684,6 +685,15 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
         preconnectThirdParty ||
         http2PushManifest
       ) {
+
+        if (
+          !route.endsWith("/404.html") &&
+          !(sitemap.exclude && sitemap.exclude.includes(route))
+        ) {
+          sitemapItems.push(route)
+        }
+
+        
         const { ajaxCache: ac, http2PushManifestItems: hpm } = preloadResources(
           {
             page,
@@ -818,9 +828,7 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
         if (!options.homepage) {
           console.log('⚠️   To generate a sitemap.xml a domain is required, add homepage to package.json');
         } else {
-
         const xml = buildSitemap(sitemapItems, options.homepage);
-        console.log("XML", xml)
         fs.writeFileSync(
           `${destinationDir}/sitemap.xml`,
           xml.replace(/^\s+/gm, "")
