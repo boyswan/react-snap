@@ -679,6 +679,15 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
         preconnectThirdParty,
         sitemap
       } = options;
+      
+      if (
+        !route.endsWith("/404.html") &&
+        !(sitemap.exclude && sitemap.exclude.includes(route))
+      ) {
+        sitemapItems.push(route)
+      }
+
+      
       if (
         preloadImages ||
         cacheAjaxRequests ||
@@ -686,14 +695,6 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
         http2PushManifest
       ) {
 
-        if (
-          !route.endsWith("/404.html") &&
-          !(sitemap.exclude && sitemap.exclude.includes(route))
-        ) {
-          sitemapItems.push(route)
-        }
-
-        
         const { ajaxCache: ac, http2PushManifestItems: hpm } = preloadResources(
           {
             page,
