@@ -31,6 +31,7 @@ const defaultOptions = {
   puppeteerIgnoreHTTPSErrors: false,
   publicPath: "/",
   minifyCss: {},
+  sitemap: false,
   minifyHtml: {
     collapseBooleanAttributes: true,
     collapseWhitespace: true,
@@ -235,6 +236,27 @@ const removeScriptTags = ({ page }) =>
       ell.parentElement && ell.parentElement.removeChild(ell);
     });
   });
+
+const buildSitemap = (routes, homepage) => {
+  const domain = homepage.replace(/\/$/, '')
+
+  return `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      ${routes
+        .map(
+          route => `
+        <url>
+          <loc>${domain + (route === '/' ? '/' : `${route}/`)}</loc>
+          <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+          <priority>0.5</priority>
+        </url>
+      `
+        )
+        .join(" ")}
+    </urlset>
+  `;
+};
 
 const preloadPolyfill = nativeFs.readFileSync(
   `${__dirname}/vendor/preload_polyfill.min.js`,
@@ -643,6 +665,7 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
   const ajaxCache = {};
   const { http2PushManifest } = options;
   const http2PushManifestItems = {};
+  const sitemapItems  = [];
 
   await crawl({
     options,
@@ -791,6 +814,21 @@ const run = async (userOptions, { fs } = { fs: nativeFs }) => {
       }
     },
     onEnd: () => {
+      if (options.sitemap) {
+        if (!options.homepage) {
+          console.log('⚠️   To generate a sitemap.xml a domain is required, add homepage to package.json');
+        } else {
+
+        const xml = buildSitemap(sitemapItems, options.homepage);
+        console.log("XML", xml)
+        fs.writeFileSync(
+          `${destinationDir}/sitemap.xml`,
+          xml.replace(/^\s+/gm, "")
+        );
+        console.log("Sitemap generated!");
+        }
+      }
+
       if (server) server.close();
       if (http2PushManifest) {
         const manifest = Object.keys(http2PushManifestItems).reduce(

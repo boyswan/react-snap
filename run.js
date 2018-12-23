@@ -28,6 +28,7 @@ switch (reactScriptsVersion) {
 run({
   publicPath: publicUrl ? url.parse(publicUrl).pathname : "/",
   fixWebpackChunksIssue,
+  homepage,
   ...reactSnap
 }).catch(error => {
   console.error(error);
