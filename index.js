@@ -249,7 +249,7 @@ const buildSitemap = (routes, homepage) => {
         <url>
           <loc>${domain + (route === '/' ? '/' : `${route}`)}</loc>
           <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
-          <priority>${route.split("/").length <= 2 ? '1' : '0.5'})</priority>
+          <priority>${route.split("/").length <= 2 ? '1' : '0.5'}</priority>
         </url>
       `
         )
