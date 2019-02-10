@@ -245,7 +245,7 @@ const buildSitemap = (routes, homepage) => {
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       ${routes
         .map(
-          route => console.log(route) || `
+          route => `
         <url>
           <loc>${domain + (route === '/' ? '/' : `${route}`)}</loc>
           <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
