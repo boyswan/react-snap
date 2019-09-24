@@ -70,6 +70,11 @@ const enableLogging = opt => {
               "\n"
             )[0] + "\n"}${stackRows.slice(0, puppeteerLine).join("\n")}`
           );
+        
+          if (!route.includes('instagram')) {
+            onError && onError();
+          }
+        
         })
         .catch(e2 => {
           console.log(`🔥  pageerror at ${route}:`, e);
@@ -81,7 +86,7 @@ const enableLogging = opt => {
     } else {
       console.log(`🔥  pageerror at ${route}:`, e);
     }
-    onError && onError();
+    //onError && onError();
   });
   page.on("response", response => {
     if (response.status() >= 400) {
